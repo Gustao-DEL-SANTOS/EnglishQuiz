@@ -2,11 +2,14 @@ const $startGameButton = document.querySelector(".start-quiz")
 const $questionsContainer = document.querySelector(".questions-container")
 const $answersContainer = document.querySelector(".answers-container")
 const $questionText = document.querySelector(".question")
+const $nextQuestionButton = document.querySelector(".next-question")
 
 
 $startGameButton.addEventListener("click", startGame)
+$nextQuestionButton.addEventListener("click", displayNextQuestion)
 
 let currentQuestionIndex = 0
+let totalCorrect = 0
 
 
 function startGame() {
@@ -17,8 +20,10 @@ function startGame() {
 
 
 function displayNextQuestion() {
-    while ($answersContainer.firstChild) {
-        $answersContainer.removeChild($answersContainer.firstChild)
+    resetState()
+
+    if (questions.length === currentQuestionIndex) {
+        return finishGame()
     }
 
     $questionText.textContent = questions[currentQuestionIndex].question
@@ -37,12 +42,22 @@ function displayNextQuestion() {
 
 }
 
+function resetState() {
+    while ($answersContainer.firstChild) {
+        $answersContainer.removeChild($answersContainer.firstChild)
+    }
+
+    document.body.removeAttribute("class")
+    $nextQuestionButton.classList.add("hide")
+}
+
 
 function selectAnswer(event) {
     const answerClicked = event.target
 
     if (answerClicked.dataset.correct) {
         document.body.classList.add("correct")
+        totalCorrect++
     } else {
         document.body.classList.add("incorrect")
     }
@@ -57,10 +72,51 @@ function selectAnswer(event) {
         button.disabled = true
     });
 
+
+    $nextQuestionButton.classList.remove("hide")
+    currentQuestionIndex++
+
 }
 
 
+function finishGame() {
+    const totalQuestion = questions.length
+    const performance = Math.floor(totalCorrect * 100 / totalQuestion)
+    console.log(performance)
 
+    let message = ""
+
+    switch (true) {
+        case (performance >= 90):
+            message = "excellent !"
+            break
+        case (performance >= 70):
+            message = "very good !"
+            break
+        case (performance >= 50):
+            message = "good !"
+            break
+        default:
+            message = "try again."
+    }
+
+
+
+    $questionsContainer.innerHTML =
+        `
+        <p class="final-message">
+            you got it right ${totalCorrect} from ${totalQuestion}
+            <span>Resultado: ${message}</span>
+        </p>
+
+        <button class='button' onclick=window.location.reload()>
+            play again
+        </button>
+
+    `
+
+
+}
 
 
 
@@ -149,7 +205,7 @@ const questions = [
         question: "How do you say orange in portuguese",
         answers: [
             { text: "Laranja", correct: true },
-            { text: "Maçã", correct: false },
+            { text: "Pera", correct: false },
             { text: "Morango", correct: false },
             { text: "Uva", correct: false }
         ]

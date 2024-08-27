@@ -123,6 +123,16 @@ body {
     cursor: not-allowed;
 }
 
+.final-message {
+    font-size: 20px;
+    text-align: center;
+}
+
+.final-message span {
+    display: block;
+    margin-top: 10px;
+}
+
 .hide {
     display: none;
 }
